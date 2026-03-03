@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: qfome-postgres
+    environment:
+      POSTGRES_DB: qfome
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - qfome_pg_data:/var/lib/postgresql/data
+
+volumes:
+  qfome_pg_data:
