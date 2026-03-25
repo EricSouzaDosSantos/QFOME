@@ -2,9 +2,7 @@ package com.qfome.service.pedido;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.qfome.dto.pedido.PedidoStatusResponse;
 import com.qfome.model.Pedido;
@@ -19,20 +17,21 @@ public class PedidoAcompanhamentoService {
     private final PedidoRepository pedidoRepository;
 
     public List<PedidoStatusResponse> buscarHistoricoPorCliente(Long clienteId) {
-        return pedidoRepository.findByClienteId(clienteId)
-                .stream()
-                .map(this::toResponse)
+        List<Pedido> pedidos = pedidoRepository.findByClienteId(clienteId);
+
+        return pedidos.stream()
+                .map(this::converterParaResponse)
                 .toList();
     }
 
     public PedidoStatusResponse acompanharPedidoPorCodigo(String codigo) {
         Pedido pedido = pedidoRepository.findByCodigo(codigo)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido nao encontrado"));
+                .orElseThrow(() -> new RuntimeException("Pedido nao encontrado com o codigo: " + codigo));
 
-        return toResponse(pedido);
+        return converterParaResponse(pedido);
     }
 
-    private PedidoStatusResponse toResponse(Pedido pedido) {
+    private PedidoStatusResponse converterParaResponse(Pedido pedido) {
         return PedidoStatusResponse.builder()
                 .id(pedido.getId())
                 .codigo(pedido.getCodigo())
